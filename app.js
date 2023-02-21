@@ -11,8 +11,11 @@ let imgContainer = document.getElementById('img-container');
 let imgOne = document.getElementById('img-one');
 let imgTwo = document.getElementById('img-two');
 let imgThree = document.getElementById('img-three');
-let resultsBtn = document.getElementById('show-results-btn');
-let resultsList = document.getElementById('results-container');
+// let resultsBtn = document.getElementById('show-results-btn');
+// let resultsList = document.getElementById('results-container');
+
+// ******* CANVAS ELEMENT FOR CHART *****
+let ctx = document.getElementById('my-chart');
 
 // ******* CONSTRUCTOR FUNCTION ********
 function Duck(name, fileExtension = 'jpg'){
@@ -24,18 +27,40 @@ function Duck(name, fileExtension = 'jpg'){
 
 // ****** HELPER FUNCTIONS / UTILITIES ******
 
+
+let indexArray = [];
 function renderImg(){
 
-  let imgOneIndex = randomIndex();
-  let imgTwoIndex = randomIndex();
-  let imgThreeIndex = randomIndex();
+  while(indexArray.length < 6){
+    let ranNum = randomIndex();
+    if(!indexArray.includes(ranNum)){
+      console.log(ranNum);
+      indexArray.push(ranNum);
 
-  while(imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex){
-    imgTwoIndex = randomIndex();
-    imgThreeIndex = randomIndex();
+    }
+    //   if(indexArray.includes(ranNum) || previousArray.includes(ranNum)){
+    //     console.log();
+    //   }
+    //   else{ indexArray.push(ranNum);
+
+    //   }
   }
-  
-  console.log(imgOneIndex,imgTwoIndex,imgThreeIndex);
+
+  console.log(indexArray);
+  // let imgOneIndex = randomIndex();
+  // let imgTwoIndex = randomIndex();
+  // let imgThreeIndex = randomIndex();
+
+  // while(imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex){
+  //   imgTwoIndex = randomIndex();
+  //   imgThreeIndex = randomIndex();
+  // }
+
+  let imgOneIndex = indexArray.shift();
+  let imgTwoIndex = indexArray.shift();
+  let imgThreeIndex = indexArray.shift();
+
+
   imgOne.src = productArray[imgOneIndex].image;
   imgOne.title = productArray[imgOneIndex].name;
   imgOne.alt = `this is an image of ${productArray[imgOneIndex].name}`;
@@ -55,6 +80,52 @@ function randomIndex(){
   return Math.floor(Math.random() * productArray.length);
 }
 
+// ****** HELPER FUNCTION TO RENDER CHART *****
+function renderChart(){
+
+  let prodNames = [];
+  let prodVotes = [];
+  let prodViews = [];
+
+  for (let i = 0; i < productArray.length; i++) {
+    prodNames.push(productArray[i].name);
+    prodVotes.push(productArray[i].votes);
+    prodViews.push(productArray[i].views);
+  }
+
+  let chartObj = {
+    type: 'bar',
+    data: {
+      labels: prodNames,
+      datasets: [{
+        label: '# Of Votes',
+        data: prodVotes,
+        borderWidth: 5,
+        backgroundColor: ['red'],
+        borderColor: ['white']
+      },
+      {
+        label: '# of Views',
+        data: prodViews,
+        borderWidth: 5,
+        backgroundColor: ['blue'],
+        borderColor: ['white']
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: false
+        }
+      }
+    }
+  };
+
+  new Chart(ctx, chartObj); //eslint-disable-line
+}
+
+
+
 function handleImgClick(event){
   // TODO: Identify the image that was clicked
   let imgClicked = event.target.title;
@@ -73,20 +144,20 @@ function handleImgClick(event){
 
   if(votingRounds === 0){
     imgContainer.removeEventListener('click', handleImgClick);
-
+    renderChart();
   }
 }
 
-function handleShowResults(){
-  if(votingRounds === 0){
-    for(let i = 0; i < productArray.length; i++){
-      let productListItem = document.createElement('li');
-      productListItem.textContent = `${productArray[i].name}: Views: ${productArray[i].views} & Votes: ${productArray[i].votes}`;
-      resultsList.appendChild(productListItem);
-    }
-    resultsBtn.removeEventListener('click', handleShowResults);
-  }
-}
+// function handleShowResults(){
+//   if(votingRounds === 0){
+//     for(let i = 0; i < productArray.length; i++){
+//       let productListItem = document.createElement('li');
+//       productListItem.textContent = `${productArray[i].name}: Views: ${productArray[i].views} & Votes: ${productArray[i].votes}`;
+//       resultsList.appendChild(productListItem);
+//     }
+//     resultsBtn.removeEventListener('click', handleShowResults);
+//   }
+// }
 
 // ***** EXECTUABLE CODE ******
 let bagProd = new Duck('bag');
@@ -113,4 +184,4 @@ console.log(productArray);
 renderImg();
 
 imgContainer.addEventListener('click', handleImgClick);
-resultsBtn.addEventListener('click', handleShowResults);
+// resultsBtn.addEventListener('click', handleShowResults);
