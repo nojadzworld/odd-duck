@@ -20,7 +20,7 @@ function renderChart() {
 
   Chart.defaults.font.size = 20; //eslint-disable-line
   Chart.defaults.font.weight = 'bold'; //eslint-disable-line
-
+  // chart setup
   let chartObj = {
     type: 'bar',
     data: {
